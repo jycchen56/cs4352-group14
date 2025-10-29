@@ -31,7 +31,7 @@ const globalStyles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 5,
-    margin:15,
+    margin: 15,
   },
   cardImage: {
     width: '100%',
