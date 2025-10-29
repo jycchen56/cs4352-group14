@@ -11,7 +11,7 @@ interface EventCardProps {
 const EventCard: React.FC<EventCardProps> = ({ imageUri, title, description }) => {
   return (
     <View style={globalStyles.card}>
-      <Image source={require('../../assets/images/partial-react-logo.png')} style={globalStyles.cardImage} />
+      <Image source={{ uri: imageUri }} style={globalStyles.cardImage} />
       <View style={{ padding: 15 }}>
         <Text style={globalStyles.headerText}>{title}</Text>
         <Text>{description}</Text>
