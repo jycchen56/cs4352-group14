@@ -1,4 +1,3 @@
-// src/pages/Home.tsx
 import React from 'react';
 import { Text, View } from 'react-native';
 import EventsScroller from './components/EventScroller'; // Import EventsScroller component
