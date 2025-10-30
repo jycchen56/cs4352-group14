@@ -139,7 +139,10 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
 
         
         <Pressable
-          onPress={onAttend ?? (() => alert("See you there!"))}
+          onPress={() => {
+            if (onAttend) onAttend();
+            router.push("/invitations");
+          }}
           style={{
             backgroundColor: "#222",
             paddingVertical: 16,
