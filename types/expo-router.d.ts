@@ -1,5 +1,6 @@
 declare module "expo-router" {
   export function useRouter(): { replace: (to: string) => void; push: (to: string) => void };
+  export function useSearchParams(): Record<string, string>;
   export const router: { replace: (to: string) => void; push: (to: string) => void };
   const Stack: any;
   const Redirect: any;
