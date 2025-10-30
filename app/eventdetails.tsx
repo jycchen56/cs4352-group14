@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { clearSelectedEvent, getSelectedEvent } from "./state/eventStore";
 
 type Props = {
   imageUri?: string;
@@ -9,6 +10,17 @@ type Props = {
 
 export default function EventDetails({ imageUri, onAttend }: Props) {
   const router = useRouter();
+  // read from the in-memory event store (set by EventCard) as a runtime-safe fallback
+  const selected = getSelectedEvent();
+  const titleFromParams = selected?.title;
+  const descriptionFromParams = selected?.description;
+
+  // clear after reading so subsequent opens don't reuse stale data
+  React.useEffect(() => {
+    return () => {
+      clearSelectedEvent();
+    };
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f7f4fa" }}>
@@ -23,7 +35,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
       >
         <Pressable
           accessibilityLabel="Go back"
-          onPress={() => router.back()}
+          onPress={() => router.replace("/home")}
           hitSlop={12}
         >
           <Text style={{ fontSize: 24 }}>←</Text>
@@ -73,7 +85,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
             fontFamily: "serif",
           }}
         >
-          Halloween Party
+          {titleFromParams ?? "Halloween Party"}
         </Text>
 
         
@@ -121,7 +133,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           </Text>
 
           <Text style={{ fontSize: 16, color: "black", lineHeight: 22 }}>
-            Come dressed in a costume and party with other workers!
+            {descriptionFromParams ?? "Come dressed in a costume and party with other workers!"}
           </Text>
         </View>
 
