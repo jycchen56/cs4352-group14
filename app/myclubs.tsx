@@ -1,11 +1,59 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { listClubsForUser } from './state/clubStore';
+import { getCurrentUser } from './state/userStore';
 
 export default function MyClubs() {
   const router = useRouter();
-  const clubs = listClubsForUser('me');
+  const user = getCurrentUser();
+  const userId = user ? user.id : 'me';
+  const clubs = listClubsForUser(userId);
+
+  const managed = clubs.filter((c) => c.members.some((m) => m.id === userId && m.role === 'organizer'));
+  const memberOnly = clubs.filter((c) => !c.members.some((m) => m.id === userId && m.role === 'organizer'));
+
+  function openManage(itemId: string) {
+    // On web, set a full URL so window.location.search is populated.
+    if (typeof window !== 'undefined') {
+      const target = `/manageclub?clubId=${encodeURIComponent(itemId)}`;
+      window.location.href = window.location.origin + target;
+      return;
+    }
+
+    // Fallback: push a string route which will include query params
+    if (router && typeof router.push === 'function') {
+      router.push(`/manageclub?clubId=${encodeURIComponent(itemId)}` as any);
+      return;
+    }
+
+    // Last resort: attempt object push
+    try {
+      router.push({ pathname: '/manageclub', params: { clubId: itemId } } as any);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function openClubView(itemId: string) {
+    // Navigate to a lightweight member-facing club view (events + chat)
+    if (typeof window !== 'undefined') {
+      const target = `/clubview?clubId=${encodeURIComponent(itemId)}`;
+      window.location.href = window.location.origin + target;
+      return;
+    }
+
+    if (router && typeof router.push === 'function') {
+      router.push(`/clubview?clubId=${encodeURIComponent(itemId)}` as any);
+      return;
+    }
+
+    try {
+      router.push({ pathname: '/clubview', params: { clubId: itemId } } as any);
+    } catch (e) {
+      // ignore
+    }
+  }
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -13,48 +61,47 @@ export default function MyClubs() {
         <Text style={styles.title}>My Clubs</Text>
       </View>
 
-      <FlatList
-        data={clubs}
-        keyExtractor={(c) => c.id}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.clubTitle}>{item.title}</Text>
-              <Text style={styles.clubDesc}>{item.description}</Text>
-            </View>
+      <View style={{ padding: 16 }}>
+        {managed.length > 0 && (
+          <View style={{ marginBottom: 18 }}>
+            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Managed Clubs</Text>
+            {managed.map((item) => (
+              <React.Fragment key={item.id}>
+                <View style={styles.card}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.clubTitle}>{item.title}</Text>
+                    <Text style={styles.clubDesc}>{item.description}</Text>
+                  </View>
 
-            <Pressable
-              onPress={() => {
-                // On web, set a full URL so window.location.search is populated.
-                if (typeof window !== 'undefined') {
-                  const target = `/manageclub?clubId=${encodeURIComponent(item.id)}`;
-                  // use origin so path is absolute
-                  window.location.href = window.location.origin + target;
-                  return;
-                }
-
-                // Fallback: push a string route which will include query params
-                if (router && typeof router.push === 'function') {
-                  router.push(`/manageclub?clubId=${encodeURIComponent(item.id)}` as any);
-                  return;
-                }
-
-                // Last resort: attempt object push
-                try {
-                  router.push({ pathname: '/manageclub', params: { clubId: item.id } } as any);
-                } catch (e) {
-                  // ignore
-                }
-              }
-              }
-              style={styles.manageBtn}
-            >
-              <Text style={{ color: 'white', fontWeight: '700' }}>Manage</Text>
-            </Pressable>
+                  <Pressable onPress={() => openManage(item.id)} style={styles.manageBtn}>
+                    <Text style={{ color: 'white', fontWeight: '700' }}>Manage</Text>
+                  </Pressable>
+                </View>
+              </React.Fragment>
+            ))}
           </View>
         )}
-      />
+
+        {memberOnly.length > 0 && (
+          <View>
+            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Member Clubs</Text>
+            {memberOnly.map((item) => (
+              <React.Fragment key={item.id}>
+                <View style={styles.card}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.clubTitle}>{item.title}</Text>
+                    <Text style={styles.clubDesc}>{item.description}</Text>
+                  </View>
+
+                  <Pressable onPress={() => openClubView(item.id)} style={styles.manageBtnSecondary}>
+                    <Text style={{ color: 'white', fontWeight: '700' }}>View</Text>
+                  </Pressable>
+                </View>
+              </React.Fragment>
+            ))}
+          </View>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
@@ -77,6 +124,13 @@ const styles = StyleSheet.create({
   clubDesc: { color: '#444', marginTop: 6 },
   manageBtn: {
     backgroundColor: '#222',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginLeft: 12,
+  },
+  manageBtnSecondary: {
+    backgroundColor: '#6b7280',
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,

@@ -4,9 +4,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const items = [
   { key: 'home', label: 'Home', path: '/home', icon: '🏠' },
-  { key: 'search', label: 'Search', path: '/search', icon: '🔍' },
-  { key: 'create', label: 'Create', path: '/create', icon: '➕' },
-  { key: 'chat', label: 'Chat', path: '/chatpage', icon: '💬' },
+  { key: 'explore', label: 'Explore', path: '/explore', icon: '🌎' },
+  { key: 'create', label: 'Create', path: '/createType', icon: '➕' },
+  { key: 'clubs', label: 'Clubs', path: '/myclubs', icon: '👥' },
   { key: 'profile', label: 'Profile', path: '/profile', icon: '👤' },
 ];
 

@@ -1,15 +1,15 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 
 export default function CreateEventBasics() {
@@ -37,14 +37,9 @@ export default function CreateEventBasics() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
       >
-        {/* Header */}
+        {/* Header (no back button) */}
         <View style={styles.header}>
-          <Pressable
-            onPress={() => router.replace("/createType")}
-            hitSlop={12}
-          >
-            <Text style={styles.backArrow}>←</Text>
-          </Pressable>
+          <View style={{ width: 22 }} />
           <Text style={styles.headerTitle}>Create Event</Text>
           <View style={{ width: 22 }} />
         </View>

@@ -1,16 +1,16 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 
-type TypeOption = "club" | "event";
+type TypeOption = "club" | "event" | "post";
 
 export default function CreateType() {
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function CreateType() {
   const goNext = () => {
     if (selected === "event") {
       router.push("/createEventBasics");
+    } else if (selected === 'post') {
+      router.push('/eventPost');
     } else {
       // placeholder for club flow
       router.push("/createClubBasics");
@@ -33,36 +35,42 @@ export default function CreateType() {
         <Text style={styles.subtitle}>Choose what you want to set up</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 28 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Club */}
-        <SelectCard
-          selected={selected === "club"}
-          onPress={() => setSelected("club")}
-          imageUri="https://images.unsplash.com/photo-1517963628607-235ccdd5476f?q=80&w=1400&auto=format&fit=crop"
-          heading="Club"
-          blurb="For recurring meetups or ongoing groups."
-        />
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 18, paddingBottom: 28 }} showsVerticalScrollIndicator={false}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12 }}>
+            <SelectCard
+              selected={selected === 'club'}
+              onPress={() => setSelected('club')}
+              imageUri="https://images.unsplash.com/photo-1517963628607-235ccdd5476f?q=80&w=1400&auto=format&fit=crop"
+              heading="Club"
+              blurb="For recurring meetups or ongoing groups."
+              compact
+            />
 
-        {/* Event */}
-        <SelectCard
-          selected={selected === "event"}
-          onPress={() => setSelected("event")}
-          imageUri="https://images.unsplash.com/photo-1561470508-fd4df1ed90b0?q=80&w=1400&auto=format&fit=crop"
-          heading="Event"
-          blurb="For one-time gatherings or occasions."
-        />
+            <SelectCard
+              selected={selected === 'event'}
+              onPress={() => setSelected('event')}
+              imageUri="https://images.unsplash.com/photo-1561470508-fd4df1ed90b0?q=80&w=1400&auto=format&fit=crop"
+              heading="Event"
+              blurb="For one-time gatherings or occasions."
+              compact
+            />
 
-        {/* Continue */}
-        <Pressable
-          onPress={goNext}
-          style={({ pressed }) => [styles.cta, pressed && { opacity: 0.9 }]}
-        >
-          <Text style={styles.ctaText}>Continue</Text>
-        </Pressable>
-      </ScrollView>
+            <SelectCard
+              selected={selected === 'post'}
+              onPress={() => setSelected('post')}
+              imageUri="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=1400&auto=format&fit=crop"
+              heading="Post"
+              blurb="Share your experience from an event you attended."
+              compact
+              hideImage
+            />
+          </View>
+
+          {/* Continue */}
+          <Pressable onPress={goNext} style={({ pressed }) => [styles.cta, pressed && { opacity: 0.9 }]}>
+            <Text style={styles.ctaText}>Continue</Text>
+          </Pressable>
+        </ScrollView>
     </SafeAreaView>
   );
 }
@@ -73,25 +81,38 @@ function SelectCard({
   imageUri,
   heading,
   blurb,
+  compact,
+  hideImage,
 }: {
   selected: boolean;
   onPress: () => void;
   imageUri: string;
   heading: string;
   blurb: string;
+  compact?: boolean;
+  hideImage?: boolean;
 }) {
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.cardWrap, pressed && { opacity: 0.96 }]}
+      style={({ pressed }) => [
+        styles.cardWrap,
+        compact && styles.cardCompact,
+        pressed && { opacity: 0.96 },
+      ]}
     >
       <View
         style={[
           styles.imageWrap,
+          compact && styles.imageWrapCompact,
           selected ? styles.imageWrapSelected : styles.imageWrapDefault,
         ]}
       >
-        <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+        {hideImage ? (
+          <View style={[styles.imagePlaceholder, compact && styles.imagePlaceholderCompact]} />
+        ) : (
+          <Image source={{ uri: imageUri }} style={styles.image} resizeMode="cover" />
+        )}
         {selected && (
           <View style={styles.checkBadge}>
             <Text style={styles.checkMark}>✓</Text>
@@ -126,6 +147,7 @@ const styles = StyleSheet.create({
   subtitle: { color: "#444", marginTop: 2 },
 
   cardWrap: { marginTop: 18 },
+  cardCompact: { flex: 1, marginTop: 12, marginRight: 8 },
 
   imageWrap: {
     height: 190,
@@ -133,6 +155,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 2,
   },
+  imageWrapCompact: { height: 120 },
 
   imageWrapDefault: {
     borderColor: "#cfcadf",
@@ -145,6 +168,8 @@ const styles = StyleSheet.create({
   },
 
   image: { width: "100%", height: "100%" },
+  imagePlaceholder: { width: '100%', height: '100%', backgroundColor: '#efeef0' },
+  imagePlaceholderCompact: { height: 120 },
 
   checkBadge: {
     position: "absolute",
