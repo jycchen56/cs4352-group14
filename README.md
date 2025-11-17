@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# Crewly — concise README
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Quick setup
 
-## Get started
+- Install dependencies: `npm install`
+- Start dev server: `npx expo start` (open on simulator, device via Expo Go, or press `w` for web)
 
-1. Install dependencies
+Test users (in-memory demo)
 
-   ```bash
-   npm install
-   ```
+- username `you` / password `you` → id `me`
+- username `alex` / password `alex` → id `m1`
 
-2. Start the app
+How the UI works (short)
 
-   ```bash
-   npx expo start
-   ```
+- Routes live in `app/` (Expo Router). `clubview.tsx` reads `clubId` and shows Events + Chat tabs.
+- Join button: when not a member it navigates to `/invitations` (hardcoded demo flow).
+- State is in `app/state/*.ts` (in-memory) — changes are NOT persisted across reloads.
 
-In the output, you'll find options to open the app in a
+Simple task:
+Join a club/event and engage with the members
+Steps:
+1. Tap on the “Explore” page and browse the events/clubs
+2. Tap on a club/event to view its details
+3. Tap “Join” to become a member and automatically enter the event’s group chat
+4. Participate by sending a response to the icebreaker or reacting to others’ messages
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Moderate task:
+Steps:
+1.Click‘+’(Create)button
+2. Choose whether to create a Club or an Event
+3.Enter the title
+4. Write a description of what it’s about
+5.Select meeting time/date
+6.Add a location
+7.Add a coverphoto
+8.Review details and click ‘Create’
+9. Post about the event
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Complex task:
+Steps:
+1. Go to “My Clubs” and select a club you manage
+2. Tap “Manage Club”
+3. Assign roles to members (i.e. organizer, moderator, planner)
+4. Post a poll to decide the next event’s date
+5. Create/add an event for its club + fill in its details
+6. Add the event  to the club’s shared calendar, allow members to sync it with their calendars
+7.  Upload additional resources/links (e.g. map, equipment location)
+8. Enable RSVP tracking and view member attendance
+9. Send (automated?) notifications/reminders about an event
+10. Allow members to send photos, feedback, tips, a dedicated channel within the chat?
+10. Post about the event
+11. View analytics on attendance and engagement
 
-## Get a fresh project
 
-When you're ready, run:
+Limitations
 
-```bash
-npm run reset-project
+- No backend/persistence; data is volatile.
+- Plaintext demo passwords in `app/state/userStore.ts`.
+
+Repo
+
+- https://github.com/jycchen56/cs4352-group14
+
+Commands
+
+```
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Tell me if you want this committed as `README.md` instead or expanded further.
