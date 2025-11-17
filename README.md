@@ -1,4 +1,4 @@
-# Crewly — concise README
+# Crewly
 
 Quick setup
 
