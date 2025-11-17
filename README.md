@@ -67,5 +67,3 @@ Commands
 npm install
 npx expo start
 ```
-
-Tell me if you want this committed as `README.md` instead or expanded further.
