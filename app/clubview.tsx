@@ -1,7 +1,7 @@
 import { useRouter, useSearchParams } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { addMember, getClubById, getClubEvents } from './state/clubStore';
+import { getClubById, getClubEvents } from './state/clubStore';
 import { getCurrentUser } from './state/userStore';
 
 function readClubId() {
@@ -38,6 +38,21 @@ export default function ClubView() {
     setIsMember(!!club && !!club.members.some((m) => m.id === userId));
   }, [club, userId]);
 
+  // Accessible, reliable Join button component to avoid touch/click issues
+  function JoinButton({ onPress }: { onPress: () => void }) {
+    return (
+      <Pressable
+        onPress={onPress}
+        hitSlop={12}
+        accessibilityRole="button"
+        accessibilityLabel="Join club"
+        style={({ pressed }) => [styles.joinBtn, pressed && styles.joinBtnPressed]}
+      >
+        <Text style={styles.joinBtnText}>Join</Text>
+      </Pressable>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
@@ -48,22 +63,34 @@ export default function ClubView() {
         {isMember ? (
           <View style={{ width: 22 }} />
         ) : (
-          <Pressable style={styles.joinBtn} onPress={() => {
-            if (!user) {
-              router.push('/login');
-              return;
-            }
+          <JoinButton
+            onPress={() => {
+              if (!user) {
+                router.push('/login');
+                return;
+              }
 
-            if (!club) return;
-            const ok = addMember(club.id, { id: user.id, name: user.name, role: 'member' } as any);
-            if (ok) {
-              setIsMember(true);
-              // reveal and switch to chat immediately after joining
-              setTab('chat');
-            }
-          }}>
-            <Text style={{ color: 'white', fontWeight: '700' }}>Join</Text>
-          </Pressable>
+              if (!club) return;
+
+              // Hardcoded behavior: if the user is NOT already a member, immediately navigate
+              // to the invitations screen. If they are already a member, open the chat.
+              if (!isMember) {
+                try {
+                  router.push('/invitations');
+                } catch (e) {
+                  if (typeof window !== 'undefined') window.location.href = '/invitations';
+                }
+                return;
+              }
+
+              // already a member: open chat
+              try {
+                router.push(`/chatpage?clubId=${encodeURIComponent(clubId)}` as any);
+              } catch (e) {
+                if (typeof window !== 'undefined') window.location.href = `/chatpage?clubId=${encodeURIComponent(clubId)}`;
+              }
+            }}
+          />
         )}
       </View>
 
@@ -131,5 +158,7 @@ const styles = StyleSheet.create({
   eventMeta: { color: '#666', marginTop: 4 },
   viewBtn: { backgroundColor: '#222', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, marginLeft: 12 },
   openChatBtn: { backgroundColor: '#2563eb', paddingVertical: 12, paddingHorizontal: 16, borderRadius: 8, alignItems: 'center' },
-  joinBtn: { backgroundColor: '#16a34a', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8 },
+  joinBtn: { backgroundColor: '#16a34a', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  joinBtnPressed: { opacity: 0.8 },
+  joinBtnText: { color: 'white', fontWeight: '700' },
 });

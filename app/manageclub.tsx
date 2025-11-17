@@ -113,6 +113,10 @@ export default function ManageClub() {
   const [newPollOptions, setNewPollOptions] = React.useState('');
   // RSVP modal state
   const [rsvpModalEvent, setRsvpModalEvent] = React.useState<string | null>(null);
+  // calendar modal state
+  const [calendarModalEvent, setCalendarModalEvent] = React.useState<string | null>(null);
+  const [selectedCalendar, setSelectedCalendar] = React.useState<string>('Google Calendar');
+  const CALENDAR_OPTIONS = ['Google Calendar', 'Outlook', 'Apple Calendar'];
 
   function openRsvpModal(eventId: string) {
     setRsvpModalEvent(eventId);
@@ -225,9 +229,15 @@ export default function ManageClub() {
                     <Text style={{ color: '#666', marginTop: 6 }}>{item.date} • {item.location}</Text>
                     <Text style={{ color: '#333', marginTop: 6 }}>RSVPs: {(item.rsvps || []).length}</Text>
                   </View>
-                  <Pressable onPress={() => openRsvpModal(item.id)} style={styles.roleBtn}>
-                    <Text style={{ color: 'white', fontWeight: '700' }}>Attendees</Text>
-                  </Pressable>
+                    <View style={{ gap: 8 }}>
+                      <Pressable onPress={() => openRsvpModal(item.id)} style={styles.roleBtn}>
+                        <Text style={{ color: 'white', fontWeight: '700' }}>Attendees</Text>
+                      </Pressable>
+
+                      <Pressable onPress={() => setCalendarModalEvent(item.id)} style={[styles.roleBtn, { backgroundColor: '#2563eb' }]}> 
+                        <Text style={{ color: 'white', fontWeight: '700' }}>Add to Calendar</Text>
+                      </Pressable>
+                    </View>
                 </View>
               )}
             />
@@ -435,6 +445,43 @@ export default function ManageClub() {
                 </Pressable>
                 <Pressable onPress={() => setRsvpModalEvent(null)} style={[styles.modalItem, { flex: 1, backgroundColor: '#eee' }]}>
                   <Text style={{ textAlign: 'center' }}>Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Calendar modal: choose external calendar to add event to */}
+        <Modal visible={!!calendarModalEvent} transparent animationType="fade" onRequestClose={() => setCalendarModalEvent(null)}>
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalCard}>
+              <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Add to External Calendar</Text>
+              <Text style={{ color: '#444', marginBottom: 10 }}>Choose a calendar to add this event to:</Text>
+
+              {CALENDAR_OPTIONS.map((c) => (
+                <Pressable key={c} onPress={() => setSelectedCalendar(c)} style={({ pressed }) => [styles.modalItem, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, pressed && { opacity: 0.9 }]}>
+                  <Text>{c}</Text>
+                  {selectedCalendar === c && <Text style={{ color: '#2563eb', fontWeight: '700' }}>✓</Text>}
+                </Pressable>
+              ))}
+
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
+                <Pressable
+                  onPress={() => {
+                    // mock adding to external calendar
+                    const evId = calendarModalEvent;
+                    if (!evId) return;
+                    // Ideally we'd generate an .ics or use deep-links; for prototype, just show confirmation
+                    Alert.alert('Added', `Event added to ${selectedCalendar} (mock)`);
+                    setCalendarModalEvent(null);
+                  }}
+                  style={[styles.modalItem, { flex: 1, backgroundColor: '#222' }]}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center' }}>Add</Text>
+                </Pressable>
+
+                <Pressable onPress={() => setCalendarModalEvent(null)} style={[styles.modalItem, { flex: 1, backgroundColor: '#eee' }]}>
+                  <Text style={{ textAlign: 'center' }}>Cancel</Text>
                 </Pressable>
               </View>
             </View>
