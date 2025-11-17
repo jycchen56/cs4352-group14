@@ -45,6 +45,14 @@ let clubs: Club[] = [
     ],
     events: [
       {
+        id: 'e0-past',
+        title: 'Autumn Photo Walk',
+        description: 'A casual morning walk to photograph fall foliage.',
+        date: '2025-10-10T10:00:00',
+        location: 'Old Town',
+        rsvps: ['m1'],
+      },
+      {
         id: 'e1',
         title: 'Golden Hour Shoot',
         description: 'Meet at the pier to capture sunset shots.',

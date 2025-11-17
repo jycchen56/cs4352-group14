@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { listProfiles, login as loginProfile } from './state/userStore';
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -9,10 +10,11 @@ export default function Login() {
   const router = useRouter();
 
   function handleLogin() {
-    if (username === "admin" && password === "1234") {
-      router.replace("/home");
+    const p = loginProfile(username, password);
+    if (p) {
+      router.replace('/home');
     } else {
-      setError("Invalid credentials.");
+      setError('Invalid credentials. Try one of the demo profiles below.');
     }
   }
 
@@ -114,6 +116,27 @@ export default function Login() {
         <TouchableOpacity onPress={() => router.push("/signup")}>
           <Text style={{ color: "#1a3d91", fontSize: 14 }}>Sign up</Text>
         </TouchableOpacity>
+      </View>
+      
+      {/* Demo profiles */}
+      <View style={{ marginTop: 30, width: '80%' }}>
+        <Text style={{ fontSize: 14, marginBottom: 8 }}>Or log in as a demo profile:</Text>
+        {listProfiles().map((p) => (
+          <Pressable
+            key={p.id}
+            onPress={() => {
+              const ok = loginProfile(p.username, p.password);
+              if (ok) {
+                router.replace('/home');
+              } else {
+                Alert.alert('Login failed');
+              }
+            }}
+            style={{ padding: 10, backgroundColor: '#eee', borderRadius: 6, marginBottom: 8 }}
+          >
+            <Text style={{ fontSize: 16 }}>{p.name} — {p.username}</Text>
+          </Pressable>
+        ))}
       </View>
     </View>
   );
