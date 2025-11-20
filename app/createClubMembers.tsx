@@ -1,23 +1,13 @@
-import { useRouter, useSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-
-function readParams() {
-  try {
-    const p: any = useSearchParams();
-    return { title: p.title ?? '', description: p.description ?? '' };
-  } catch (e) {
-    if (typeof window !== 'undefined') {
-      const q = new URLSearchParams(window.location.search);
-      return { title: q.get('title') ?? '', description: q.get('description') ?? '' };
-    }
-  }
-  return { title: '', description: '' };
-}
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateClubMembers() {
   const router = useRouter();
-  const params = readParams();
+  const params = useLocalSearchParams();
+  const title = typeof params.title === 'string' ? params.title : '';
+  const description = typeof params.description === 'string' ? params.description : '';
   const [inviteText, setInviteText] = useState('');
   const [invites, setInvites] = useState<string[]>([]);
 
@@ -29,8 +19,8 @@ export default function CreateClubMembers() {
   };
 
   const goNext = () => {
-    const q = `?title=${encodeURIComponent(params.title)}&description=${encodeURIComponent(params.description)}&invites=${encodeURIComponent(JSON.stringify(invites))}`;
-    router.push(`/createClubReview${q}` as any);
+    const q = `?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}&invites=${encodeURIComponent(JSON.stringify(invites))}`;
+    router.push(`/createClubReview${q}`);
   };
 
   return (

@@ -17,7 +17,7 @@ const users: UserProfile[] = [
   { id: 'm5', username: 'diego', password: 'diego', name: 'Diego' },
 ];
 
-let currentUserId: string | null = null;
+let currentUserId: string | null = 'm1';
 let currentNotifications: Array<{
   clubId: string;
   clubTitle: string;
@@ -92,3 +92,6 @@ export function computeNotificationsForUserId(userId: string) {
   currentUserId = prev;
   return result;
 }
+
+// Initialize notifications for the default user
+computeNotificationsForCurrentUser();

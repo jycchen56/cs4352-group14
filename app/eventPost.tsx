@@ -1,18 +1,18 @@
 import { useRouter } from "expo-router";
 import React, { useMemo, useState } from "react";
 import {
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
-import { listClubs } from "./state/clubStore";
-import { createPost } from "./state/postStore";
-import { getCurrentUser } from "./state/userStore";
+import { listClubs } from "../state/clubStore";
+import { createPost } from "../state/postStore";
+import { getCurrentUser } from "../state/userStore";
 
 export default function EventPost() {
   const router = useRouter();

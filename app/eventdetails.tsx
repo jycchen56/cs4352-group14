@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
-import { clearSelectedEvent, getSelectedEvent } from "./state/eventStore";
+import { clearSelectedEvent, getSelectedEvent } from "../state/eventStore";
 
 type Props = {
   imageUri?: string;
@@ -35,7 +35,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
       >
         <Pressable
           accessibilityLabel="Go back"
-          onPress={() => router.replace("/home")}
+          onPress={() => router.back()}
           hitSlop={12}
         >
           <Text style={{ fontSize: 24 }}>←</Text>
@@ -58,7 +58,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
 
         <Pressable
           accessibilityLabel="Close"
-          onPress={() => router.replace("/home")}
+          onPress={() => router.back()}
           hitSlop={12}
         >
           <Text style={{ fontSize: 20 }}>✕</Text>

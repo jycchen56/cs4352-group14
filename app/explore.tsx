@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
 import React, { useMemo } from 'react';
-import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import EventCard from './components/EventCard';
-import { listClubs, listClubsForUser } from './state/clubStore';
-import { getCurrentUser } from './state/userStore';
-import globalStyles from './styles/globalStyles';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import EventCard from '../components/EventCard';
+import { listClubs, listClubsForUser } from '../state/clubStore';
+import { getCurrentUser } from '../state/userStore';
+import globalStyles from '../styles/globalStyles';
 
 export default function Explore() {
   const router = useRouter();
@@ -33,34 +34,39 @@ export default function Explore() {
 
   return (
     <SafeAreaView style={globalStyles.container}>
-      <Text style={globalStyles.headerText}>Explore</Text>
+      <FlatList
+        data={events}
+        keyExtractor={(i) => i.title}
+        contentContainerStyle={{ paddingBottom: 120 }}
+        ListHeaderComponent={
+          <>
+            <Text style={globalStyles.headerText}>Explore</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Clubs You Might Like</Text>
-        {clubs.length === 0 && <Text style={styles.emptyText}>No clubs to explore right now.</Text>}
-        {clubs.map((c) => (
-          <View key={c.id} style={styles.clubCard}>
-            <Text style={styles.clubTitle}>{c.title}</Text>
-            <Text style={styles.clubDesc}>{c.description}</Text>
-            <View style={styles.clubActions}>
-              <Pressable onPress={() => router.push(`/clubview?clubId=${encodeURIComponent(c.id)}` as any)} style={styles.viewBtn}>
-                <Text style={styles.viewBtnText}>View</Text>
-              </Pressable>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Clubs You Might Like</Text>
+              {clubs.length === 0 && <Text style={styles.emptyText}>No clubs to explore right now.</Text>}
+              {clubs.map((c) => (
+                <View key={c.id} style={styles.clubCard}>
+                  <Text style={styles.clubTitle}>{c.title}</Text>
+                  <Text style={styles.clubDesc}>{c.description}</Text>
+                  <View style={styles.clubActions}>
+                    <Pressable onPress={() => router.push(`/clubview?clubId=${encodeURIComponent(c.id)}` as any)} style={styles.viewBtn}>
+                      <Text style={styles.viewBtnText}>View</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              ))}
             </View>
-          </View>
-        ))}
-      </View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Events Nearby</Text>
-        {events.length === 0 && <Text style={styles.emptyText}>No events to show.</Text>}
-        <FlatList
-          data={events}
-          keyExtractor={(i) => i.title}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          renderItem={({ item }) => <EventCard imageUri={item.imageUri} title={item.title} description={item.description ?? ''} />}
-        />
-      </View>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Events Nearby</Text>
+            </View>
+          </>
+        }
+        ListEmptyComponent={<Text style={styles.emptyText}>No events to show.</Text>}
+        renderItem={({ item }) => <EventCard imageUri={item.imageUri} title={item.title} description={item.description ?? ''} />}
+        showsVerticalScrollIndicator={false}
+      />
     </SafeAreaView>
   );
 }

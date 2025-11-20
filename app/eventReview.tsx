@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
-import { createClub, createEvent, listClubsForUser } from './state/clubStore';
-import { getCurrentUser } from './state/userStore';
+import { Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { createClub, createEvent, listClubsForUser } from '../state/clubStore';
+import { getCurrentUser } from '../state/userStore';
 
 export default function EventReview() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { listProfiles, login as loginProfile } from './state/userStore';
+import { listProfiles, login as loginProfile } from '../state/userStore';
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -121,7 +121,7 @@ export default function Login() {
       {/* Demo profiles */}
       <View style={{ marginTop: 30, width: '80%' }}>
         <Text style={{ fontSize: 14, marginBottom: 8 }}>Or log in as a demo profile:</Text>
-        {listProfiles().map((p) => (
+        {listProfiles().filter((p) => p.username === 'alex').map((p) => (
           <Pressable
             key={p.id}
             onPress={() => {

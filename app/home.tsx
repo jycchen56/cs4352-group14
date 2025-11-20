@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import BottomNav from './components/BottomNav';
-import EventsScroller from './components/EventScroller'; // Import EventsScroller component
-import { listClubsForUser } from './state/clubStore';
-import { getCurrentUser, getNotificationsForCurrentUser } from './state/userStore';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import EventsScroller from '../components/EventScroller'; // Import EventsScroller component
+import { listClubsForUser } from '../state/clubStore';
+import { getCurrentUser, getNotificationsForCurrentUser } from '../state/userStore';
 
 const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80';
 
@@ -34,8 +34,8 @@ const Home: React.FC = () => {
   const notifs = getNotificationsForCurrentUser();
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView style={{ flex: 1, backgroundColor: '#f7f7f7', padding: 20 }} contentContainerStyle={{ paddingBottom: 120 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+      <ScrollView style={{ flex: 1, backgroundColor: '#f7f7f7', padding: 20 }} contentContainerStyle={{ paddingBottom: 20 }}>
       <View style={{ marginBottom: 12 }}>
         <Text style={{ fontSize: 32, fontWeight: 'bold', paddingBottom: 8 }}>Your Events</Text>
         {user ? (
@@ -72,8 +72,7 @@ const Home: React.FC = () => {
         )}
       </ScrollView>
 
-      <BottomNav />
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,6 +1,7 @@
-import * as ExpoRouter from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Alert, FlatList, Linking, Modal, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, FlatList, Linking, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
     addResource,
     assignRole,
@@ -13,42 +14,12 @@ import {
     getClubResources,
     getEventRsvps,
     rsvpEvent,
-} from './state/clubStore';
+} from '../state/clubStore';
 
 export default function ManageClub() {
-  // use guarded access to `useSearchParams` / router because some runtimes
-  // or older expo-router versions may not expose the same helpers.
-  const router = ExpoRouter.useRouter ? ExpoRouter.useRouter() : ({} as any);
-
-  let clubId: string | undefined;
-  try {
-    if (typeof ExpoRouter.useSearchParams === 'function') {
-      const params = ExpoRouter.useSearchParams();
-      if (params && typeof params.clubId === 'string') clubId = params.clubId as string;
-    }
-  } catch (e) {
-    // ignore — will try fallback below
-  }
-
-  // If router.params is available (from router.push with params), prefer that.
-  try {
-    if (!clubId && router && router.params && typeof router.params.clubId === 'string') {
-      clubId = router.params.clubId as string;
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  // fallback for web: parse window.location.search
-  if (!clubId && typeof window !== 'undefined' && window.location?.search) {
-    try {
-      const sp = new URLSearchParams(window.location.search);
-      const v = sp.get('clubId');
-      if (v) clubId = v;
-    } catch (e) {
-      /* ignore */
-    }
-  }
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const clubId = typeof params.clubId === 'string' ? params.clubId : undefined;
   const [refresh, setRefresh] = React.useState<number>(0);
 
   if (!clubId || typeof clubId !== 'string') {
@@ -132,20 +103,13 @@ export default function ManageClub() {
   }
 
   function goToMyClubs() {
-    if (router && typeof router.replace === 'function') {
-      router.replace('/myclubs');
-      return;
-    }
-    // fallback to web navigation if router helpers not available
-    if (typeof window !== 'undefined') {
-      window.location.href = '/myclubs';
-    }
+    router.replace('/myclubs');
   }
 
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Pressable onPress={() => goToMyClubs()} hitSlop={12}>
+        <Pressable onPress={() => router.back()} hitSlop={12}>
           <Text style={{ fontSize: 22 }}>←</Text>
         </Pressable>
         <Text style={styles.headerTitle}>{club.title}</Text>

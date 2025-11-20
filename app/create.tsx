@@ -1,9 +1,9 @@
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Alert, Picker, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { createEvent, listClubs } from './state/clubStore';
-import { createPost } from './state/postStore';
-import { getCurrentUser } from './state/userStore';
+import { createEvent, listClubs } from '../state/clubStore';
+import { createPost } from '../state/postStore';
+import { getCurrentUser } from '../state/userStore';
 
 export default function CreateScreen() {
   const router = useRouter();

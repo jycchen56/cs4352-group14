@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { listClubsForUser } from './state/clubStore';
-import { getCurrentUser } from './state/userStore';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { listClubsForUser } from '../state/clubStore';
+import { getCurrentUser } from '../state/userStore';
 
 export default function MyClubs() {
   const router = useRouter();
@@ -14,45 +15,12 @@ export default function MyClubs() {
   const memberOnly = clubs.filter((c) => !c.members.some((m) => m.id === userId && m.role === 'organizer'));
 
   function openManage(itemId: string) {
-    // On web, set a full URL so window.location.search is populated.
-    if (typeof window !== 'undefined') {
-      const target = `/manageclub?clubId=${encodeURIComponent(itemId)}`;
-      window.location.href = window.location.origin + target;
-      return;
-    }
-
-    // Fallback: push a string route which will include query params
-    if (router && typeof router.push === 'function') {
-      router.push(`/manageclub?clubId=${encodeURIComponent(itemId)}` as any);
-      return;
-    }
-
-    // Last resort: attempt object push
-    try {
-      router.push({ pathname: '/manageclub', params: { clubId: itemId } } as any);
-    } catch (e) {
-      // ignore
-    }
+    router.push(`/manageclub?clubId=${itemId}`);
   }
 
   function openClubView(itemId: string) {
     // Navigate to a lightweight member-facing club view (events + chat)
-    if (typeof window !== 'undefined') {
-      const target = `/clubview?clubId=${encodeURIComponent(itemId)}`;
-      window.location.href = window.location.origin + target;
-      return;
-    }
-
-    if (router && typeof router.push === 'function') {
-      router.push(`/clubview?clubId=${encodeURIComponent(itemId)}` as any);
-      return;
-    }
-
-    try {
-      router.push({ pathname: '/clubview', params: { clubId: itemId } } as any);
-    } catch (e) {
-      // ignore
-    }
+    router.push(`/clubview?clubId=${itemId}`);
   }
 
   return (

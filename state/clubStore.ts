@@ -38,8 +38,8 @@ let clubs: Club[] = [
     title: 'Photography Club',
     description: 'Weekly meetups to share photos and technique.',
     members: [
-      { id: 'me', name: 'You', role: 'organizer' },
-      { id: 'm1', name: 'Alex', role: 'member' },
+      { id: 'm1', name: 'Alex', role: 'organizer' },
+      { id: 'me', name: 'You', role: 'member' },
       { id: 'm2', name: 'Sam', role: 'moderator' },
       { id: 'm4', name: 'Priya', role: 'planner' },
     ],
@@ -118,6 +118,29 @@ let clubs: Club[] = [
     resources: [
       { id: 'b-r1', label: 'Hall Directions', url: 'https://example.com/hall-directions.png' },
     ],
+  },
+
+
+  {
+    id: 'club-3',
+    title: 'Hiking Adventures',
+    description: 'Weekend hikes for all skill levels.',
+    members: [
+      { id: 'm2', name: 'Sam', role: 'organizer' },
+      { id: 'm5', name: 'Diego', role: 'member' },
+    ],
+    events: [
+      {
+        id: 'h-e1',
+        title: 'Mountain Trail Loop',
+        description: 'A 5-mile loop with scenic views.',
+        date: '2025-11-22T08:00:00',
+        location: 'Blue Ridge Start',
+        rsvps: ['m2', 'm5'],
+      },
+    ],
+    polls: [],
+    resources: [],
   },
 ];
 

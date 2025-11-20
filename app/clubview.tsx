@@ -1,30 +1,14 @@
-import { useRouter, useSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import { FlatList, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { getClubById, getClubEvents } from './state/clubStore';
-import { getCurrentUser } from './state/userStore';
-
-function readClubId() {
-  // Try expo-router hook first (works in many runtimes)
-  try {
-    const params: any = useSearchParams();
-    if (params && params.clubId) return params.clubId as string;
-  } catch (e) {
-    // ignore
-  }
-
-  // Fallback to window.location.search for web
-  if (typeof window !== 'undefined') {
-    const q = new URLSearchParams(window.location.search);
-    return q.get('clubId') ?? '';
-  }
-
-  return '';
-}
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { getClubById, getClubEvents } from '../state/clubStore';
+import { getCurrentUser } from '../state/userStore';
 
 export default function ClubView() {
   const router = useRouter();
-  const clubId = readClubId();
+  const params = useLocalSearchParams();
+  const clubId = typeof params.clubId === 'string' ? params.clubId : '';
   const club = useMemo(() => getClubById(clubId), [clubId]);
   const events = useMemo(() => (club ? getClubEvents(club.id) : []), [club]);
 
@@ -75,20 +59,12 @@ export default function ClubView() {
               // Hardcoded behavior: if the user is NOT already a member, immediately navigate
               // to the invitations screen. If they are already a member, open the chat.
               if (!isMember) {
-                try {
-                  router.push('/invitations');
-                } catch (e) {
-                  if (typeof window !== 'undefined') window.location.href = '/invitations';
-                }
+                router.push('/invitations');
                 return;
               }
 
               // already a member: open chat
-              try {
-                router.push(`/chatpage?clubId=${encodeURIComponent(clubId)}` as any);
-              } catch (e) {
-                if (typeof window !== 'undefined') window.location.href = `/chatpage?clubId=${encodeURIComponent(clubId)}`;
-              }
+              router.push(`/chatpage?clubId=${encodeURIComponent(clubId)}`);
             }}
           />
         )}
@@ -118,7 +94,7 @@ export default function ClubView() {
                   {item.date ? <Text style={styles.eventMeta}>{new Date(item.date).toLocaleString()}</Text> : null}
                   {item.location ? <Text style={styles.eventMeta}>{item.location}</Text> : null}
                 </View>
-                <Pressable style={styles.viewBtn} onPress={() => router.push(`/eventdetails?clubId=${encodeURIComponent(clubId)}&eventId=${encodeURIComponent(item.id)}` as any)}>
+                <Pressable style={styles.viewBtn} onPress={() => router.push(`/eventdetails?clubId=${encodeURIComponent(clubId)}&eventId=${encodeURIComponent(item.id)}`)}>
                   <Text style={{ color: 'white', fontWeight: '700' }}>Details</Text>
                 </Pressable>
               </View>
@@ -134,7 +110,7 @@ export default function ClubView() {
         {tab === 'chat' && (
           <View style={{ flex: 1 }}>
             <Text style={{ marginBottom: 12, color: '#444' }}>Open the club chat to join conversations.</Text>
-            <Pressable onPress={() => router.push(`/chatpage?clubId=${encodeURIComponent(clubId)}` as any)} style={styles.openChatBtn}>
+            <Pressable onPress={() => router.push(`/chatpage?clubId=${encodeURIComponent(clubId)}`)} style={styles.openChatBtn}>
               <Text style={{ color: 'white', fontWeight: '700' }}>Open Chat</Text>
             </Pressable>
           </View>

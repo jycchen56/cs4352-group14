@@ -1,34 +1,25 @@
-import { useRouter, useSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Pressable, SafeAreaView, Text, View } from 'react-native';
-import { addMember, createClub } from './state/clubStore';
-import { getCurrentUser } from './state/userStore';
-
-function readParams() {
-  try {
-    const p: any = useSearchParams();
-    return { title: p.title ?? '', description: p.description ?? '', invites: p.invites ?? '[]' };
-  } catch (e) {
-    if (typeof window !== 'undefined') {
-      const q = new URLSearchParams(window.location.search);
-      return { title: q.get('title') ?? '', description: q.get('description') ?? '', invites: q.get('invites') ?? '[]' };
-    }
-  }
-  return { title: '', description: '', invites: '[]' };
-}
+import { Pressable, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { addMember, createClub } from '../state/clubStore';
+import { getCurrentUser } from '../state/userStore';
 
 export default function CreateClubReview() {
   const router = useRouter();
-  const params = readParams();
+  const params = useLocalSearchParams();
+  const title = typeof params.title === 'string' ? params.title : '';
+  const description = typeof params.description === 'string' ? params.description : '';
+  const invitesStr = typeof params.invites === 'string' ? params.invites : '[]';
   const user = getCurrentUser();
 
   const invites = React.useMemo(() => {
     try {
-      return JSON.parse(params.invites || '[]');
+      return JSON.parse(invitesStr);
     } catch (e) {
       return [];
     }
-  }, [params.invites]);
+  }, [invitesStr]);
 
   const handleCreate = () => {
     if (!user) {
@@ -36,7 +27,7 @@ export default function CreateClubReview() {
       return;
     }
 
-    const club = createClub(params.title || 'New Club', params.description || '', user.id, user.name);
+    const club = createClub(title || 'New Club', description || '', user.id, user.name);
     // add invited members as plain members (best-effort)
     invites.forEach((i: string) => {
       // generate a simple id for demo users
@@ -45,7 +36,7 @@ export default function CreateClubReview() {
     });
 
     // navigate to manage view for the creator
-    router.replace(`/manageclub?clubId=${encodeURIComponent(club.id)}` as any);
+    router.replace(`/manageclub?clubId=${encodeURIComponent(club.id)}`);
   };
 
   return (
@@ -55,8 +46,8 @@ export default function CreateClubReview() {
       </View>
 
       <View style={{ padding: 18 }}>
-        <Text style={{ fontSize: 16, fontWeight: '800' }}>{params.title}</Text>
-        <Text style={{ color: '#444', marginTop: 8 }}>{params.description}</Text>
+        <Text style={{ fontSize: 16, fontWeight: '800' }}>{title}</Text>
+        <Text style={{ color: '#444', marginTop: 8 }}>{description}</Text>
 
         <View style={{ marginTop: 18 }}>
           <Text style={{ fontWeight: '700' }}>Invites</Text>

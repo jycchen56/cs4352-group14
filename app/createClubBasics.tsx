@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateClubBasics() {
   const router = useRouter();
@@ -19,7 +20,9 @@ export default function CreateClubBasics() {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
         <View style={styles.header}>
-          <View style={{ width: 22 }} />
+          <Pressable onPress={() => router.back()} hitSlop={12}>
+            <Text style={{ fontSize: 22 }}>←</Text>
+          </Pressable>
           <Text style={styles.headerTitle}>Create Club</Text>
           <View style={{ width: 22 }} />
         </View>
