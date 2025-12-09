@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     FlatList,
     KeyboardAvoidingView,
@@ -25,20 +25,26 @@ export default function ChatRoom() {
   const [input, setInput] = useState("");
   const listRef = useRef<FlatList<Msg>>(null);
 
-  const data = useMemo<Msg[]>(
-    () => [
-      { id: "1", author: "Chris", text: "Wassup! Excited to meet you guys", time: "12:30 PM" },
-      { id: "2", author: "", text: "Likewise!", time: "12:30 PM", me: true },
-      { id: "3", author: "Jay", text: "I want you guys to guess my costume", time: "12:31 PM" },
-      { id: "4", author: "", text: "I think you’re dressed as a\npirate", time: "12:31 PM", me: true },
-      { id: "5", author: "Catherine", text: "Please don’t wear a clown costume!!", time: "12:32 PM" },
-    ],
-    []
-  );
+  const [data, setData] = useState<Msg[]>([
+    { id: "1", author: "Chris", text: "Wassup! Excited to meet you guys", time: "12:30 PM" },
+    { id: "2", author: "", text: "Likewise!", time: "12:30 PM", me: true },
+    { id: "3", author: "Jay", text: "I want you guys to guess my costume", time: "12:31 PM" },
+    { id: "4", author: "", text: "I think you’re dressed as a\npirate", time: "12:31 PM", me: true },
+    { id: "5", author: "Catherine", text: "Please don’t wear a clown costume!!", time: "12:32 PM" },
+  ]);
 
   function send() {
     if (!input.trim()) return;
-    //plug into backend
+
+    const newMsg: Msg = {
+      id: Date.now().toString(),
+      author: "",
+      text: input.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      me: true,
+    };
+
+    setData((prev) => [...prev, newMsg]);
     setInput("");
     requestAnimationFrame(() => listRef.current?.scrollToEnd({ animated: true }));
   }
