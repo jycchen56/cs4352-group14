@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Alert, Picker, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createEvent, listClubs } from '../state/clubStore';
 import { createPost } from '../state/postStore';
 import { getCurrentUser } from '../state/userStore';
@@ -84,66 +85,68 @@ export default function CreateScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 12 }}>Create</Text>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1, padding: 20 }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', marginBottom: 12 }}>Create</Text>
 
-      <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-        <Pressable onPress={() => setMode('event')} style={{ marginRight: 12 }}>
-          <Text style={{ fontWeight: mode === 'event' ? '700' : '400' }}>Event</Text>
-        </Pressable>
-        <Pressable onPress={() => setMode('post')}>
-          <Text style={{ fontWeight: mode === 'post' ? '700' : '400' }}>Post</Text>
-        </Pressable>
-      </View>
-
-      {mode === 'event' ? (
-        <View>
-          <Text style={{ marginBottom: 6 }}>Club</Text>
-          <Picker selectedValue={clubId} onValueChange={(v) => setClubId(String(v))}>
-            <Picker.Item label="Select a club" value={undefined} />
-            {clubs.map((c) => (
-              <Picker.Item key={c.id} label={c.title} value={c.id} />
-            ))}
-          </Picker>
-
-          <Text style={{ marginTop: 8 }}>Title</Text>
-          <TextInput value={title} onChangeText={setTitle} style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
-
-          <Text style={{ marginTop: 8 }}>Description</Text>
-          <TextInput value={description} onChangeText={setDescription} multiline style={{ borderWidth: 1, padding: 8, borderRadius: 6, height: 100 }} />
-
-          <Text style={{ marginTop: 8 }}>Date (ISO format)</Text>
-          <TextInput value={date} onChangeText={setDate} placeholder="2025-12-01T18:00:00" style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
-
-          <Text style={{ marginTop: 8 }}>Location</Text>
-          <TextInput value={location} onChangeText={setLocation} style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
-
-          <Pressable onPress={handleCreateEvent} style={{ marginTop: 12, backgroundColor: '#222', padding: 12, borderRadius: 8 }}>
-            <Text style={{ color: 'white', textAlign: 'center' }}>Create Event</Text>
+        <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+          <Pressable onPress={() => setMode('event')} style={{ marginRight: 12 }}>
+            <Text style={{ fontWeight: mode === 'event' ? '700' : '400' }}>Event</Text>
+          </Pressable>
+          <Pressable onPress={() => setMode('post')}>
+            <Text style={{ fontWeight: mode === 'post' ? '700' : '400' }}>Post</Text>
           </Pressable>
         </View>
-      ) : (
-        <View>
-          <Text style={{ marginBottom: 6 }}>Choose an event you attended</Text>
-          {attendedPastEvents.length === 0 ? (
-            <Text style={{ color: '#666', marginBottom: 8 }}>No past attended events found.</Text>
-          ) : (
-            <Picker selectedValue={selectedEventId} onValueChange={(v) => setSelectedEventId(String(v))}>
-              <Picker.Item label="Select an event" value={undefined} />
-              {attendedPastEvents.map((e) => (
-                <Picker.Item key={e.eventId} label={`${e.title} — ${e.date ? new Date(e.date).toLocaleDateString() : ''}`} value={e.eventId} />
+
+        {mode === 'event' ? (
+          <View>
+            <Text style={{ marginBottom: 6 }}>Club</Text>
+            <Picker selectedValue={clubId} onValueChange={(v) => setClubId(String(v))}>
+              <Picker.Item label="Select a club" value={undefined} />
+              {clubs.map((c) => (
+                <Picker.Item key={c.id} label={c.title} value={c.id} />
               ))}
             </Picker>
-          )}
 
-          <Text style={{ marginTop: 8 }}>Write about the event</Text>
-          <TextInput value={postContent} onChangeText={setPostContent} multiline style={{ borderWidth: 1, padding: 8, borderRadius: 6, height: 140 }} />
+            <Text style={{ marginTop: 8 }}>Title</Text>
+            <TextInput value={title} onChangeText={setTitle} style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
 
-          <Pressable onPress={handleCreatePost} style={{ marginTop: 12, backgroundColor: '#222', padding: 12, borderRadius: 8 }}>
-            <Text style={{ color: 'white', textAlign: 'center' }}>Post</Text>
-          </Pressable>
-        </View>
-      )}
-    </ScrollView>
+            <Text style={{ marginTop: 8 }}>Description</Text>
+            <TextInput value={description} onChangeText={setDescription} multiline style={{ borderWidth: 1, padding: 8, borderRadius: 6, height: 100 }} />
+
+            <Text style={{ marginTop: 8 }}>Date (ISO format)</Text>
+            <TextInput value={date} onChangeText={setDate} placeholder="2025-12-01T18:00:00" style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
+
+            <Text style={{ marginTop: 8 }}>Location</Text>
+            <TextInput value={location} onChangeText={setLocation} style={{ borderWidth: 1, padding: 8, borderRadius: 6 }} />
+
+            <Pressable onPress={handleCreateEvent} style={{ marginTop: 12, backgroundColor: '#222', padding: 12, borderRadius: 8 }}>
+              <Text style={{ color: 'white', textAlign: 'center' }}>Create Event</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View>
+            <Text style={{ marginBottom: 6 }}>Choose an event you attended</Text>
+            {attendedPastEvents.length === 0 ? (
+              <Text style={{ color: '#666', marginBottom: 8 }}>No past attended events found.</Text>
+            ) : (
+              <Picker selectedValue={selectedEventId} onValueChange={(v) => setSelectedEventId(String(v))}>
+                <Picker.Item label="Select an event" value={undefined} />
+                {attendedPastEvents.map((e) => (
+                  <Picker.Item key={e.eventId} label={`${e.title} — ${e.date ? new Date(e.date).toLocaleDateString() : ''}`} value={e.eventId} />
+                ))}
+              </Picker>
+            )}
+
+            <Text style={{ marginTop: 8 }}>Write about the event</Text>
+            <TextInput value={postContent} onChangeText={setPostContent} multiline style={{ borderWidth: 1, padding: 8, borderRadius: 6, height: 140 }} />
+
+            <Pressable onPress={handleCreatePost} style={{ marginTop: 12, backgroundColor: '#222', padding: 12, borderRadius: 8 }}>
+              <Text style={{ color: 'white', textAlign: 'center' }}>Post</Text>
+            </Pressable>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }

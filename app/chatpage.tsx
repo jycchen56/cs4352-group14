@@ -5,18 +5,18 @@ import {
     KeyboardAvoidingView,
     Platform,
     Pressable,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Msg = {
   id: string;
-  author: string;       
+  author: string;
   text: string;
-  time: string;       
+  time: string;
   me?: boolean;          // right-side bubble when true
 };
 
@@ -90,30 +90,31 @@ export default function ChatRoom() {
         <View style={{ width: 22 }} />
       </View>
 
-      {/* unique ice breaker hardcode */}
-      <View style={styles.iceWrap}>
-        <Text style={styles.iceLabel}>Ice Breaker Suggestion</Text>
-        <View style={styles.iceCard}>
-          <Text style={styles.iceText}>
-            Try sharing your costume idea{"\n"}(or what not to wear this year 👀).
-          </Text>
-        </View>
-      </View>
-
-      
-      <FlatList
-        ref={listRef}
-        data={data}
-        keyExtractor={(m) => m.id}
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 12 }}
-        showsVerticalScrollIndicator={false}
-      />
-
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 8 : 0}
       >
+        {/* unique ice breaker hardcode */}
+        <View style={styles.iceWrap}>
+          <Text style={styles.iceLabel}>Ice Breaker Suggestion</Text>
+          <View style={styles.iceCard}>
+            <Text style={styles.iceText}>
+              Try sharing your costume idea{"\n"}(or what not to wear this year 👀).
+            </Text>
+          </View>
+        </View>
+
+        <FlatList
+          ref={listRef}
+          data={data}
+          keyExtractor={(m) => m.id}
+          renderItem={renderItem}
+          contentContainerStyle={{ paddingHorizontal: 14, paddingBottom: 12 }}
+          showsVerticalScrollIndicator={false}
+          style={{ flex: 1 }}
+        />
+
         <View style={styles.composer}>
           <TextInput
             value={input}

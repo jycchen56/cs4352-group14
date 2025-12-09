@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Pressable, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { clearSelectedEvent, getSelectedEvent } from "../state/eventStore";
 
 type Props = {
@@ -41,21 +42,6 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           <Text style={{ fontSize: 24 }}>←</Text>
         </Pressable>
 
-        {/* tiny grabber */}
-        <View
-          style={{
-            position: "absolute",
-            top: 6,
-            left: "50%",
-            transform: [{ translateX: -20 }],
-            width: 40,
-            height: 4,
-            borderRadius: 2,
-            backgroundColor: "#bbb",
-            opacity: 0.8,
-          }}
-        />
-
         <Pressable
           accessibilityLabel="Close"
           onPress={() => router.back()}
@@ -88,7 +74,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           {titleFromParams ?? "Halloween Party"}
         </Text>
 
-        
+
         <Text
           style={{
             fontSize: 24,
@@ -102,7 +88,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           Location
         </Text>
 
-        
+
         <View
           style={{
             backgroundColor: "#eee",
@@ -126,7 +112,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           />
         </View>
 
-        
+
         <View style={{ paddingHorizontal: 8 }}>
           <Text style={{ fontSize: 16, color: "black", marginBottom: 10 }}>
             <Text style={{ fontWeight: "600" }}>Date:</Text> October 31, 2025 at 7pm
@@ -137,7 +123,7 @@ export default function EventDetails({ imageUri, onAttend }: Props) {
           </Text>
         </View>
 
-        
+
         <Pressable
           onPress={() => {
             if (onAttend) onAttend();

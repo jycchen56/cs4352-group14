@@ -4,12 +4,12 @@ import {
     KeyboardAvoidingView,
     Platform,
     Pressable,
-    SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { listClubs } from "../state/clubStore";
 import { createPost } from "../state/postStore";
 import { getCurrentUser } from "../state/userStore";
@@ -97,6 +97,9 @@ export default function EventPost() {
             </View>
           )}
           {/* Description box */}
+          <Text style={styles.label}>
+            Description<Text style={styles.required}>*</Text>
+          </Text>
           <TextInput
             placeholder="Enter Description"
             placeholderTextColor="#999"
@@ -226,8 +229,8 @@ const styles = StyleSheet.create({
     marginBottom: 22,
   },
 
-  
-  
+
+
 
   footer: {
     paddingHorizontal: 18,
@@ -244,4 +247,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
   },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#222",
+    marginBottom: 4,
+  },
+  required: { color: "#c0392b" },
 });

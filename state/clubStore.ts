@@ -142,6 +142,27 @@ let clubs: Club[] = [
     polls: [],
     resources: [],
   },
+  {
+    id: 'club-4',
+    title: 'Book Club',
+    description: 'Monthly book discussions and coffee.',
+    members: [
+      { id: 'm2', name: 'Sam', role: 'organizer' },
+      { id: 'm1', name: 'Alex', role: 'member' },
+    ],
+    events: [
+      {
+        id: 'bc-e1',
+        title: 'The Great Gatsby Discussion',
+        description: 'Discussing the first 5 chapters.',
+        date: '2025-12-15T14:00:00',
+        location: 'Corner Cafe',
+        rsvps: ['m1'],
+      },
+    ],
+    polls: [],
+    resources: [],
+  },
 ];
 
 export function listClubs(): Club[] {

@@ -4,13 +4,13 @@ import {
     KeyboardAvoidingView,
     Platform,
     Pressable,
-    SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
     View,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CreateEventBasics() {
   const router = useRouter();
@@ -39,8 +39,8 @@ export default function CreateEventBasics() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => (router as any).back()} hitSlop={12} style={{ padding: 8 }}>
-            <Text style={{ fontSize: 16, color: '#222' }}>Cancel</Text>
+          <Pressable onPress={() => (router as any).back()} hitSlop={12}>
+            <Text style={styles.backArrow}>←</Text>
           </Pressable>
           <Text style={styles.headerTitle}>Create Event</Text>
           <View style={{ width: 22 }} />
