@@ -56,7 +56,7 @@ let clubs: Club[] = [
         id: 'e1',
         title: 'Golden Hour Shoot',
         description: 'Meet at the pier to capture sunset shots.',
-        date: '2025-11-20T17:00:00',
+        date: '2025-12-20T17:00:00', // Updated to future
         location: 'Pier 7',
         rsvps: ['me', 'm1', 'm2'],
       },
@@ -64,7 +64,7 @@ let clubs: Club[] = [
         id: 'e2',
         title: 'Studio Lighting Workshop',
         description: 'Intro to studio lighting and flashes.',
-        date: '2025-12-05T18:30:00',
+        date: '2026-01-05T18:30:00', // Updated to future
         location: 'Room 210',
         rsvps: ['m1'],
       },
@@ -98,9 +98,9 @@ let clubs: Club[] = [
     events: [
       {
         id: 'b-e1',
-        title: 'Monthly Game Night — November',
+        title: 'Monthly Game Night — December',
         description: 'Bring your favorite two-player games.',
-        date: '2025-11-28T19:00:00',
+        date: '2025-12-28T19:00:00', // Updated to future
         location: 'Community Hall',
         rsvps: ['me', 'm3'],
       },
@@ -134,7 +134,7 @@ let clubs: Club[] = [
         id: 'h-e1',
         title: 'Mountain Trail Loop',
         description: 'A 5-mile loop with scenic views.',
-        date: '2025-11-22T08:00:00',
+        date: '2025-12-22T08:00:00', // Updated to future
         location: 'Blue Ridge Start',
         rsvps: ['m2', 'm5'],
       },

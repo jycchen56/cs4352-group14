@@ -1,11 +1,11 @@
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
+    Pressable,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 
 type Props = {
@@ -35,7 +35,7 @@ export default function Invitation({
           <View style={styles.buttonRow}>
             <Pressable
               onPress={onReturnHome ?? (() => router.replace("/home"))}
-              style={({ pressed }) => [
+              style={({ pressed }: { pressed: boolean }) => [
                 styles.button,
                 styles.buttonLeft,
                 pressed && styles.pressed,
@@ -46,7 +46,7 @@ export default function Invitation({
 
             <Pressable
               onPress={onGoToChat ?? (() => router.push("/chatpage"))}
-              style={({ pressed }) => [
+              style={({ pressed }: { pressed: boolean }) => [
                 styles.button,
                 styles.buttonRight,
                 pressed && styles.pressed,

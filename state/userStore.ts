@@ -52,6 +52,7 @@ export function getCurrentUser() {
 }
 
 export function getNotificationsForCurrentUser() {
+  computeNotificationsForCurrentUser();
   return currentNotifications;
 }
 

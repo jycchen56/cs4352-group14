@@ -1,26 +1,61 @@
+// @ts-ignore
+import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, FlatList, Linking, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-    addResource,
-    assignRole,
-    createEvent,
-    createPoll,
-    getAnalytics,
-    getClubById,
-    getClubEvents,
-    getClubPolls,
-    getClubResources,
-    getEventRsvps,
-    rsvpEvent,
+  addResource,
+  assignRole,
+  ClubEvent,
+  createEvent,
+  createPoll,
+  getAnalytics,
+  getClubById,
+  getClubEvents,
+  getClubPolls,
+  getClubResources,
+  getEventRsvps,
+  Member,
+  Poll,
+  rsvpEvent,
 } from '../state/clubStore';
 
 export default function ManageClub() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const clubId = typeof params.clubId === 'string' ? params.clubId : undefined;
-  const [refresh, setRefresh] = React.useState<number>(0);
+  const refreshVal = React.useState<number>(0);
+  const setRefresh = refreshVal[1];
+  // Force re-render when screen comes into focus
+  useIsFocused();
+
+  // role menu state (used instead of cycling roles)
+  const [roleMenuMember, setRoleMenuMember] = React.useState<string | null>(null);
+  const ROLE_OPTIONS: Array<'member' | 'organizer' | 'moderator' | 'planner'> = ['member', 'organizer', 'moderator', 'planner'];
+
+  // UI tab state
+  const [tab, setTab] = React.useState<'members' | 'events' | 'polls' | 'resources' | 'analytics'>('members');
+  // resource add modal state
+  const [resourceModalOpen, setResourceModalOpen] = React.useState(false);
+  const [newResourceLabel, setNewResourceLabel] = React.useState('');
+  const [newResourceUrl, setNewResourceUrl] = React.useState('');
+  // event add modal state
+  const [eventModalOpen, setEventModalOpen] = React.useState(false);
+  const [newEventTitle, setNewEventTitle] = React.useState('');
+  const [newEventDesc, setNewEventDesc] = React.useState('');
+  const [newEventDate, setNewEventDate] = React.useState('');
+  const [newEventLocation, setNewEventLocation] = React.useState('');
+  // poll add modal state
+  const [pollModalOpen, setPollModalOpen] = React.useState(false);
+  const [newPollQuestion, setNewPollQuestion] = React.useState('');
+  const [newPollOptions, setNewPollOptions] = React.useState('');
+  // RSVP modal state
+  const [rsvpModalEvent, setRsvpModalEvent] = React.useState<string | null>(null);
+  // calendar modal state
+  const [calendarModalEvent, setCalendarModalEvent] = React.useState<string | null>(null);
+  const [selectedCalendar, setSelectedCalendar] = React.useState<string>('Google Calendar');
+  const CALENDAR_OPTIONS = ['Google Calendar', 'Outlook', 'Apple Calendar'];
 
   if (!clubId || typeof clubId !== 'string') {
     return (
@@ -49,10 +84,6 @@ export default function ManageClub() {
     );
   }
 
-  // role menu state (used instead of cycling roles)
-  const [roleMenuMember, setRoleMenuMember] = React.useState<string | null>(null);
-  const ROLE_OPTIONS: Array<'member' | 'organizer' | 'moderator' | 'planner'> = ['member', 'organizer', 'moderator', 'planner'];
-
   function assignRoleHandler(memberId: string, role: 'member' | 'organizer' | 'moderator' | 'planner') {
     const c = getClubById(clubId as string);
     if (!c) return;
@@ -65,29 +96,6 @@ export default function ManageClub() {
     // trigger re-render
     setRefresh((r: number) => r + 1);
   }
-
-  // UI tab state
-  const [tab, setTab] = React.useState<'members' | 'events' | 'polls' | 'resources' | 'analytics'>('members');
-  // resource add modal state
-  const [resourceModalOpen, setResourceModalOpen] = React.useState(false);
-  const [newResourceLabel, setNewResourceLabel] = React.useState('');
-  const [newResourceUrl, setNewResourceUrl] = React.useState('');
-  // event add modal state
-  const [eventModalOpen, setEventModalOpen] = React.useState(false);
-  const [newEventTitle, setNewEventTitle] = React.useState('');
-  const [newEventDesc, setNewEventDesc] = React.useState('');
-  const [newEventDate, setNewEventDate] = React.useState('');
-  const [newEventLocation, setNewEventLocation] = React.useState('');
-  // poll add modal state
-  const [pollModalOpen, setPollModalOpen] = React.useState(false);
-  const [newPollQuestion, setNewPollQuestion] = React.useState('');
-  const [newPollOptions, setNewPollOptions] = React.useState('');
-  // RSVP modal state
-  const [rsvpModalEvent, setRsvpModalEvent] = React.useState<string | null>(null);
-  // calendar modal state
-  const [calendarModalEvent, setCalendarModalEvent] = React.useState<string | null>(null);
-  const [selectedCalendar, setSelectedCalendar] = React.useState<string>('Google Calendar');
-  const CALENDAR_OPTIONS = ['Google Calendar', 'Outlook', 'Apple Calendar'];
 
   function openRsvpModal(eventId: string) {
     setRsvpModalEvent(eventId);
@@ -109,14 +117,14 @@ export default function ManageClub() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
+        <Pressable onPress={() => (router as any).back()} hitSlop={12}>
           <Text style={{ fontSize: 22 }}>←</Text>
         </Pressable>
         <Text style={styles.headerTitle}>{club.title}</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <View style={{ padding: 12 }}>
+      <View style={{ padding: 12, flex: 1 }}>
         <View style={styles.tabRow}>
           <Pressable onPress={() => setTab('members')} style={[styles.tabBtn, tab === 'members' && styles.tabActive]}>
             <Text style={tab === 'members' ? styles.tabTextActive : styles.tabText}>Members</Text>
@@ -140,8 +148,8 @@ export default function ManageClub() {
             <Text style={{ fontSize: 16, fontWeight: '700', marginBottom: 12 }}>Members & Roles</Text>
             <FlatList
               data={club.members}
-              keyExtractor={(m) => m.id}
-              renderItem={({ item }) => (
+              keyExtractor={(m: Member) => m.id}
+              renderItem={({ item }: { item: Member }) => (
                 <View style={styles.memberRow}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontWeight: '700' }}>{item.name}</Text>
@@ -163,7 +171,7 @@ export default function ManageClub() {
             <View style={styles.modalCard}>
               <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Assign Role</Text>
               {ROLE_OPTIONS.map((r) => (
-                <Pressable key={r} onPress={() => roleMenuMember && assignRoleHandler(roleMenuMember, r)} style={({ pressed }) => [styles.modalItem, pressed && { opacity: 0.85 }]}>
+                <Pressable key={r} onPress={() => roleMenuMember && assignRoleHandler(roleMenuMember, r)} style={({ pressed }: { pressed: boolean }) => [styles.modalItem, pressed && { opacity: 0.85 }]}>
                   <Text style={{ fontSize: 15 }}>{r}</Text>
                 </Pressable>
               ))}
@@ -175,17 +183,18 @@ export default function ManageClub() {
         </Modal>
 
         {tab === 'events' && (
-          <View style={{ marginTop: 12 }}>
+          <View style={{ marginTop: 12, flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <Text style={{ fontSize: 16, fontWeight: '700' }}>Events</Text>
-              <Pressable onPress={() => setEventModalOpen(true)} style={{ padding: 8, backgroundColor: '#222', borderRadius: 8 }}>
-                <Text style={{ color: 'white', fontWeight: '800' }}>＋</Text>
+              <Pressable onPress={() => setEventModalOpen(true)} style={styles.primaryActionBtn}>
+                <Text style={{ color: 'white', fontWeight: '800' }}>＋ Create</Text>
               </Pressable>
             </View>
             <FlatList
               data={getClubEvents(club.id)}
-              keyExtractor={(e) => e.id}
-              renderItem={({ item }) => (
+              keyExtractor={(e: ClubEvent) => e.id}
+              contentContainerStyle={{ paddingBottom: 20 }}
+              renderItem={({ item }: { item: ClubEvent }) => (
                 <View style={styles.memberRow}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontWeight: '800' }}>{item.title}</Text>
@@ -198,7 +207,7 @@ export default function ManageClub() {
                         <Text style={{ color: 'white', fontWeight: '700' }}>Attendees</Text>
                       </Pressable>
 
-                      <Pressable onPress={() => setCalendarModalEvent(item.id)} style={[styles.roleBtn, { backgroundColor: '#2563eb' }]}> 
+                      <Pressable onPress={() => setCalendarModalEvent(item.id)} style={styles.roleBtn}>
                         <Text style={{ color: 'white', fontWeight: '700' }}>Add to Calendar</Text>
                       </Pressable>
                     </View>
@@ -212,17 +221,17 @@ export default function ManageClub() {
           <View style={{ marginTop: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <Text style={{ fontSize: 16, fontWeight: '700' }}>Polls</Text>
-              <Pressable onPress={() => setPollModalOpen(true)} style={{ padding: 8, backgroundColor: '#222', borderRadius: 8 }}>
-                <Text style={{ color: 'white', fontWeight: '800' }}>＋</Text>
+              <Pressable onPress={() => setPollModalOpen(true)} style={styles.primaryActionBtn}>
+                <Text style={{ color: 'white', fontWeight: '800' }}>＋ Create</Text>
               </Pressable>
             </View>
             <FlatList
               data={getClubPolls(club.id)}
-              keyExtractor={(p) => p.id}
-              renderItem={({ item }) => (
-                <View style={[styles.memberRow, { flexDirection: 'column', alignItems: 'flex-start' }]}> 
+              keyExtractor={(p: Poll) => p.id}
+              renderItem={({ item }: { item: Poll }) => (
+                <View style={[styles.memberRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
                   <Text style={{ fontWeight: '800' }}>{item.question}</Text>
-                  {item.options.map((opt) => (
+                  {item.options.map((opt: { id: string; label: string; votes: number }) => (
                     <React.Fragment key={opt.id}>
                       <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', paddingVertical: 6 }}>
                         <Text>{opt.label}</Text>
@@ -240,14 +249,14 @@ export default function ManageClub() {
           <View style={{ marginTop: 12 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <Text style={{ fontSize: 16, fontWeight: '700' }}>Resources</Text>
-              <Pressable onPress={() => setResourceModalOpen(true)} style={{ padding: 8, backgroundColor: '#222', borderRadius: 8 }}>
-                <Text style={{ color: 'white', fontWeight: '800' }}>＋</Text>
+              <Pressable onPress={() => setResourceModalOpen(true)} style={styles.primaryActionBtn}>
+                <Text style={{ color: 'white', fontWeight: '800' }}>＋ Add</Text>
               </Pressable>
             </View>
             <FlatList
               data={getClubResources(club.id)}
-              keyExtractor={(r) => r.id}
-              renderItem={({ item }) => (
+              keyExtractor={(r: { id: string }) => r.id}
+              renderItem={({ item }: { item: { id: string; label: string; url?: string } }) => (
                 <View style={styles.memberRow}>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontWeight: '700' }}>{item.label}</Text>
@@ -267,8 +276,12 @@ export default function ManageClub() {
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
               <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Add Resource</Text>
-              <TextInput placeholder="Label" value={newResourceLabel} onChangeText={setNewResourceLabel} style={styles.input} />
-              <TextInput placeholder="URL" value={newResourceUrl} onChangeText={setNewResourceUrl} style={styles.input} autoCapitalize="none" />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Label</Text>
+              <TextInput placeholder="e.g. Club Handbook" value={newResourceLabel} onChangeText={setNewResourceLabel} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>URL</Text>
+              <TextInput placeholder="https://" value={newResourceUrl} onChangeText={setNewResourceUrl} style={styles.input} autoCapitalize="none" />
 
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
                 <Pressable
@@ -287,6 +300,7 @@ export default function ManageClub() {
                     setNewResourceLabel('');
                     setNewResourceUrl('');
                     setResourceModalOpen(false);
+                    Alert.alert('Success', 'Resource added successfully');
                     setRefresh((r: number) => r + 1);
                   }}
                   style={[styles.modalItem, { flex: 1, backgroundColor: '#222' }]}
@@ -307,9 +321,17 @@ export default function ManageClub() {
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
               <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Create Event</Text>
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Event Title</Text>
               <TextInput placeholder="Title" value={newEventTitle} onChangeText={setNewEventTitle} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Description</Text>
               <TextInput placeholder="Description" value={newEventDesc} onChangeText={setNewEventDesc} style={styles.input} />
-              <TextInput placeholder="Date/time (ISO or readable)" value={newEventDate} onChangeText={setNewEventDate} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Date & Time</Text>
+              <TextInput placeholder="e.g. 2024-12-25 14:00" value={newEventDate} onChangeText={setNewEventDate} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Location</Text>
               <TextInput placeholder="Location" value={newEventLocation} onChangeText={setNewEventLocation} style={styles.input} />
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
                 <Pressable
@@ -329,6 +351,7 @@ export default function ManageClub() {
                     setNewEventDate('');
                     setNewEventLocation('');
                     setEventModalOpen(false);
+                    Alert.alert('Success', 'Event created successfully');
                     setRefresh((r: number) => r + 1);
                   }}
                   style={[styles.modalItem, { flex: 1, backgroundColor: '#222' }]}
@@ -348,8 +371,12 @@ export default function ManageClub() {
           <View style={styles.modalBackdrop}>
             <View style={styles.modalCard}>
               <Text style={{ fontWeight: '800', fontSize: 16, marginBottom: 8 }}>Create Poll</Text>
-              <TextInput placeholder="Question" value={newPollQuestion} onChangeText={setNewPollQuestion} style={styles.input} />
-              <TextInput placeholder="Options (comma separated)" value={newPollOptions} onChangeText={setNewPollOptions} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Question</Text>
+              <TextInput placeholder="What should we do?" value={newPollQuestion} onChangeText={setNewPollQuestion} style={styles.input} />
+              
+              <Text style={{ fontWeight: '600', marginBottom: 4 }}>Options</Text>
+              <TextInput placeholder="Option 1, Option 2 (comma separated)" value={newPollOptions} onChangeText={setNewPollOptions} style={styles.input} />
               <View style={{ flexDirection: 'row', gap: 8, marginTop: 8 }}>
                 <Pressable
                   onPress={() => {
@@ -368,6 +395,7 @@ export default function ManageClub() {
                     setNewPollQuestion('');
                     setNewPollOptions('');
                     setPollModalOpen(false);
+                    Alert.alert('Success', 'Poll created successfully');
                     setRefresh((r: number) => r + 1);
                   }}
                   style={[styles.modalItem, { flex: 1, backgroundColor: '#222' }]}
@@ -423,7 +451,7 @@ export default function ManageClub() {
               <Text style={{ color: '#444', marginBottom: 10 }}>Choose a calendar to add this event to:</Text>
 
               {CALENDAR_OPTIONS.map((c) => (
-                <Pressable key={c} onPress={() => setSelectedCalendar(c)} style={({ pressed }) => [styles.modalItem, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, pressed && { opacity: 0.9 }]}>
+                <Pressable key={c} onPress={() => setSelectedCalendar(c)} style={({ pressed }: { pressed: boolean }) => [styles.modalItem, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }, pressed && { opacity: 0.9 }]}>
                   <Text>{c}</Text>
                   {selectedCalendar === c && <Text style={{ color: '#2563eb', fontWeight: '700' }}>✓</Text>}
                 </Pressable>
@@ -498,10 +526,10 @@ const styles = StyleSheet.create({
   memberRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
+    padding: 16, // Increased padding
     backgroundColor: 'white',
     borderRadius: 8,
-    marginBottom: 10,
+    marginBottom: 14, // Increased spacing
     borderWidth: 1,
     borderColor: '#e6e6e6',
   },
@@ -526,5 +554,11 @@ const styles = StyleSheet.create({
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.35)', alignItems: 'center', justifyContent: 'center' },
   modalCard: { width: '86%', backgroundColor: 'white', padding: 14, borderRadius: 12 },
   modalItem: { paddingVertical: 12, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#fff', width: '100%', marginBottom: 6 },
+  primaryActionBtn: {
+    backgroundColor: '#222', // Standardize to Black/Dark Gray for primary actions
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
   input: { borderWidth: 1, borderColor: '#ddd', paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8, backgroundColor: '#fff', marginBottom: 8 },
 });

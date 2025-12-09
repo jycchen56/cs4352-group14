@@ -23,10 +23,10 @@ const EventCard: React.FC<EventCardProps> = ({ imageUri, title, description }: E
     <View style={globalStyles.card}>
       <Image source={{ uri: imageUri }} style={globalStyles.cardImage} />
       <View style={{ padding: 15 }}>
-        <Text style={globalStyles.headerText}>{title}</Text>
-        <Text>{description}</Text>
+        <Text style={[globalStyles.headerText, { marginBottom: 6 }]}>{title}</Text>
+        <Text style={{ marginBottom: 12, lineHeight: 20 }}>{description}</Text>
         <TouchableOpacity style={globalStyles.button} onPress={handlePress}>
-          <Text style={globalStyles.buttonText}>You're free!</Text>
+          <Text style={globalStyles.buttonText}>View Details</Text>
         </TouchableOpacity>
       </View>
     </View>

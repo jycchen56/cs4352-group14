@@ -16,7 +16,7 @@ interface EventsScrollerProps {
 const EventsScroller: React.FC<EventsScrollerProps> = ({ events }) => {
   return (
     <ScrollView style={{ marginTop: 20 }}>
-      {events.map((event, index) => (
+      {events.map((event: EventData, index: number) => (
         <EventCard
           key={index}
           imageUri={event.imageUri}

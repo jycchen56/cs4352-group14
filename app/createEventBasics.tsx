@@ -17,8 +17,8 @@ export default function CreateEventBasics() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [time, setTime] = useState("6:00pm");
-  const [date, setDate] = useState("10/19/25");
+  const [time, _setTime] = useState("6:00pm");
+  const [date, _setDate] = useState("10/19/25");
   const [privacy, setPrivacy] = useState<"Public" | "Private">("Public");
   const [showPrivacyOptions, setShowPrivacyOptions] = useState(false);
 
@@ -39,8 +39,8 @@ export default function CreateEventBasics() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} hitSlop={12}>
-            <Text style={styles.backArrow}>←</Text>
+          <Pressable onPress={() => (router as any).back()} hitSlop={12} style={{ padding: 8 }}>
+            <Text style={{ fontSize: 16, color: '#222' }}>Cancel</Text>
           </Pressable>
           <Text style={styles.headerTitle}>Create Event</Text>
           <View style={{ width: 22 }} />
@@ -101,7 +101,7 @@ export default function CreateEventBasics() {
           {/* Privacy */}
           <Text style={[styles.label, { marginTop: 22 }]}>Event Privacy</Text>
           <Pressable
-            onPress={() => setShowPrivacyOptions((s) => !s)}
+            onPress={() => setShowPrivacyOptions((s: boolean) => !s)}
             style={styles.privacyField}
           >
             <Text style={styles.inlineFieldText}>{privacy}</Text>
@@ -137,7 +137,7 @@ export default function CreateEventBasics() {
           <Pressable
             onPress={handleContinue}
             disabled={!canContinue}
-            style={({ pressed }) => [
+            style={({ pressed }: { pressed: boolean }) => [
               styles.cta,
               !canContinue && { opacity: 0.4 },
               pressed && canContinue && { opacity: 0.85 },
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 18,
     paddingTop: 12,
-    paddingBottom: 24,
+    paddingBottom: 20, // Reduced
   },
 
   label: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
 
   row: {
     flexDirection: "row",
-    marginTop: 18,
+    marginTop: 14, // Reduced from 18
   },
   column: { flex: 1 },
 

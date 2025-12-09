@@ -1,3 +1,4 @@
+// @ts-ignore
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -15,11 +16,11 @@ export default function ClubView() {
   const [tab, setTab] = useState<'events' | 'chat'>('events');
   const user = getCurrentUser();
   const userId = user ? user.id : 'me';
-  const [isMember, setIsMember] = useState<boolean>(() => !!club && !!club.members.some((m) => m.id === userId));
+  const [isMember, setIsMember] = useState<boolean>(() => !!club && !!club.members.some((m: Member) => m.id === userId));
 
   // update membership if club or user changes
   React.useEffect(() => {
-    setIsMember(!!club && !!club.members.some((m) => m.id === userId));
+    setIsMember(!!club && !!club.members.some((m: Member) => m.id === userId));
   }, [club, userId]);
 
   // Accessible, reliable Join button component to avoid touch/click issues
@@ -30,7 +31,7 @@ export default function ClubView() {
         hitSlop={12}
         accessibilityRole="button"
         accessibilityLabel="Join club"
-        style={({ pressed }) => [styles.joinBtn, pressed && styles.joinBtnPressed]}
+        style={({ pressed }: { pressed: boolean }) => [styles.joinBtn, pressed && styles.joinBtnPressed]}
       >
         <Text style={styles.joinBtnText}>Join</Text>
       </Pressable>
@@ -40,7 +41,7 @@ export default function ClubView() {
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} hitSlop={12}>
+        <Pressable onPress={() => (router as any).back()} hitSlop={12}>
           <Text style={{ fontSize: 22 }}>←</Text>
         </Pressable>
         <Text style={styles.title}>{club?.title ?? 'Club'}</Text>
@@ -86,8 +87,8 @@ export default function ClubView() {
         {tab === 'events' && (
           <FlatList
             data={events}
-            keyExtractor={(e) => e.id}
-            renderItem={({ item }) => (
+            keyExtractor={(e: ClubEvent) => e.id}
+            renderItem={({ item }: { item: ClubEvent }) => (
               <View style={styles.card}>
                 <View style={{ flex: 1 }}>
                   <Text style={styles.eventTitle}>{item.title}</Text>

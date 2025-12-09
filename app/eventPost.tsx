@@ -71,7 +71,9 @@ export default function EventPost() {
       >
         {/* Header (no back button) */}
         <View style={styles.header}>
-          <View style={{ width: 22 }} />
+          <Pressable onPress={() => (router as any).back()} hitSlop={12}>
+            <Text style={styles.backArrow}>←</Text>
+          </Pressable>
           <Text style={styles.headerTitle}>Post</Text>
           <View style={{ width: 22 }} />
         </View>

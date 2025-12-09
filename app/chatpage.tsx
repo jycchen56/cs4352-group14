@@ -121,6 +121,7 @@ export default function ChatRoom() {
             placeholder="Message"
             placeholderTextColor="#777"
             style={styles.input}
+            autoFocus={false}
             multiline
           />
           <Pressable onPress={send} style={({ pressed }) => [styles.sendBtn, pressed && { opacity: 0.9 }]}>

@@ -22,12 +22,12 @@ export default function BottomNav() {
               onPress={() => {
                 try {
                   router.push(it.path);
-                } catch (e) {
+                } catch {
                   // fallback: attempt to set location for web
                   if (typeof window !== 'undefined') window.location.href = it.path;
                 }
               }}
-              style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+              style={({ pressed }: { pressed: boolean }) => [styles.button, pressed && styles.pressed]}
             >
               <Text style={styles.icon}>{it.icon}</Text>
               <Text style={styles.label}>{it.label}</Text>

@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventsScroller from '../components/EventScroller'; // Import EventsScroller component
@@ -12,7 +13,10 @@ const Home: React.FC = () => {
   const user = getCurrentUser();
   const userId = user ? user.id : 'me';
 
-  const events = useMemo(() => {
+  // Force re-render on focus to capture store updates
+  useIsFocused();
+
+  const events = (() => {
     const clubs = listClubsForUser(userId);
     const evs: { imageUri: string; title: string; description?: string }[] = [];
     clubs.forEach((c) => {
@@ -29,7 +33,7 @@ const Home: React.FC = () => {
     // sort by date if available (earliest first)
     evs.sort((a, b) => 0);
     return evs;
-  }, [userId]);
+  })();
 
   const notifs = getNotificationsForCurrentUser();
 
@@ -46,7 +50,7 @@ const Home: React.FC = () => {
 
         {notifs && notifs.length > 0 ? (
           <View style={{ backgroundColor: '#fff3cd', padding: 12, borderRadius: 8 }}>
-            <Text style={{ fontWeight: '700', marginBottom: 6 }}>Upcoming events you're RSVP'd to:</Text>
+            <Text style={{ fontWeight: '700', marginBottom: 6 }}>Upcoming events you&apos;re RSVP&apos;d to:</Text>
             {notifs.map((n) => {
               const date = n.date ? new Date(n.date) : null;
               const when = date ? date.toLocaleString() : 'TBD';

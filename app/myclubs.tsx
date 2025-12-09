@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -9,6 +10,10 @@ export default function MyClubs() {
   const router = useRouter();
   const user = getCurrentUser();
   const userId = user ? user.id : 'me';
+
+  // Force re-render on focus
+  useIsFocused();
+
   const clubs = listClubsForUser(userId);
 
   const managed = clubs.filter((c) => c.members.some((m) => m.id === userId && m.role === 'organizer'));
@@ -32,7 +37,7 @@ export default function MyClubs() {
       <View style={{ padding: 16 }}>
         {managed.length > 0 && (
           <View style={{ marginBottom: 18 }}>
-            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Managed Clubs</Text>
+            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Clubs I Manage</Text>
             {managed.map((item) => (
               <React.Fragment key={item.id}>
                 <View style={styles.card}>
@@ -52,7 +57,7 @@ export default function MyClubs() {
 
         {memberOnly.length > 0 && (
           <View>
-            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>Member Clubs</Text>
+            <Text style={{ fontSize: 18, fontWeight: '800', marginBottom: 8 }}>My Memberships</Text>
             {memberOnly.map((item) => (
               <React.Fragment key={item.id}>
                 <View style={styles.card}>
